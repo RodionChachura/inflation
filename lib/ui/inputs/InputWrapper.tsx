@@ -1,3 +1,4 @@
+import React from "react";
 import styled, { css } from "styled-components";
 import { VStack } from "lib/ui/Stack";
 import { Text } from "lib/ui/Text";

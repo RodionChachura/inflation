@@ -1,4 +1,7 @@
 import { InflationReport } from "components/InflationReport";
+import { DollarIcon } from "lib/ui/icons/DollarIcon";
+import { PercentIcon } from "lib/ui/icons/PercentIcon";
+import { AmountTextInput } from "lib/ui/inputs/AmountTextInput";
 import { TextInput } from "lib/ui/inputs/TextInput";
 import { VStack } from "lib/ui/Stack";
 import { Text } from "lib/ui/Text";
@@ -17,11 +20,8 @@ const Container = styled.div`
 `;
 
 export default function Home() {
-  const [amount, setAmount] = useState("100000");
-  const [inflation, setInflation] = useState("8");
-
-  const amountNumber = Number(amount);
-  const inflationNumber = Number(inflation) / 100;
+  const [amount, setAmount] = useState<number | undefined>(100000);
+  const [inflation, setInflation] = useState<number | undefined>(8);
 
   return (
     <>
@@ -42,24 +42,23 @@ export default function Home() {
             ?
           </Text>
           <VStack gap={4}>
-            <TextInput
+            <AmountTextInput
               label="My savings"
               value={amount}
               onValueChange={setAmount}
               type="number"
+              unit={<DollarIcon />}
             />
-            <TextInput
+            <AmountTextInput
               label="Expected inflation"
               value={inflation}
               onValueChange={setInflation}
               type="number"
+              unit={<PercentIcon />}
             />
           </VStack>
-          {!isNaN(amountNumber) && !isNaN(inflationNumber) && (
-            <InflationReport
-              savings={amountNumber}
-              inflation={inflationNumber}
-            />
+          {amount !== undefined && inflation !== undefined && (
+            <InflationReport savings={amount} inflation={inflation / 100} />
           )}
         </VStack>
       </Container>

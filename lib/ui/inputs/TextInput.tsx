@@ -15,27 +15,46 @@ export type SharedTextInputProps = Pick<
   onValueChange?: (value: string) => void;
 };
 
-type TextInputProps = InputHTMLAttributes<HTMLInputElement> &
-  SharedTextInputProps;
+export type TextInputProps = InputHTMLAttributes<HTMLInputElement> &
+  SharedTextInputProps & {
+    inputOverlay?: React.ReactNode;
+  };
 
 export const TextInput = forwardRef(function TextInputInner(
-  { onValueChange, label, error, height, ...props }: TextInputProps,
+  {
+    onValueChange,
+    label,
+    error,
+    height,
+    inputOverlay,
+    ...props
+  }: TextInputProps,
   ref: Ref<HTMLInputElement> | null
 ) {
   return (
     <InputWrapperWithErrorMessage error={error} label={label}>
-      <TextInputContainer
-        {...props}
-        isValid={!error}
-        ref={ref}
-        onChange={(event: ChangeEvent<HTMLInputElement>) => {
-          props.onChange?.(event);
-          onValueChange?.(event.currentTarget.value);
-        }}
-      />
+      <InputWr>
+        <TextInputContainer
+          {...props}
+          isValid={!error}
+          ref={ref}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            props.onChange?.(event);
+            onValueChange?.(event.currentTarget.value);
+          }}
+        />
+        {inputOverlay}
+      </InputWr>
     </InputWrapperWithErrorMessage>
   );
 });
+
+const InputWr = styled.div`
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
 
 export const commonInputCSS = css<{
   isValid: boolean;
@@ -44,8 +63,10 @@ export const commonInputCSS = css<{
   max-width: 100%;
 
   background: ${({ theme }) => theme.colors.backgroundGlass.toCssValue()};
-  padding: 12px;
   color: ${({ theme }) => theme.colors.text.toCssValue()};
+  font-weight: 500;
+  font-size: 18px;
+  width: 100%;
 
   ${defaultTransitionCSS};
 
@@ -60,7 +81,7 @@ export const commonInputCSS = css<{
       ? theme.colors.backgroundGlass.toCssValue()
       : errorColor;
     const activeColor = isValid
-      ? theme.colors.primary.toCssValue()
+      ? theme.colors.backgroundGlass2.toCssValue()
       : errorColor;
 
     return css`
