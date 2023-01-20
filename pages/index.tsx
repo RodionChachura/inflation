@@ -1,22 +1,23 @@
 import { InflationReport } from "components/InflationReport";
+import { InflationResourcePromotion } from "components/InflationResourcePromotion";
 import { DollarIcon } from "lib/ui/icons/DollarIcon";
 import { PercentIcon } from "lib/ui/icons/PercentIcon";
 import { AmountTextInput } from "lib/ui/inputs/AmountTextInput";
-import { TextInput } from "lib/ui/inputs/TextInput";
 import { VStack } from "lib/ui/Stack";
 import { Text } from "lib/ui/Text";
 import Head from "next/head";
 import { useState } from "react";
 import styled from "styled-components";
 
-const Container = styled.div`
-  width: 100%;
-  min-height: 100%;
+const Container = styled(VStack)`
   padding: 80px 20px 40px 20px;
 
-  display: flex;
-  flex-direction: column;
   align-items: center;
+`;
+
+const Content = styled(VStack)`
+  max-width: 360px;
+  gap: 20px;
 `;
 
 export default function Home() {
@@ -33,34 +34,35 @@ export default function Home() {
         />
       </Head>
       <Container>
-        <VStack gap={20} style={{ maxWidth: 360 }}>
-          <Text centered as="h1">
+        <Content>
+          <Text as="h1">
             How much money am I losing to{" "}
             <Text as="span" color="alert">
-              inflation
+              inflation?
             </Text>
-            ?
           </Text>
           <VStack gap={4}>
             <AmountTextInput
-              label="My savings"
+              label="Savings"
               value={amount}
               onValueChange={setAmount}
-              type="number"
+              shouldBePositive
+              shouldBeInteger
               unit={<DollarIcon />}
             />
             <AmountTextInput
-              label="Expected inflation"
+              label="Inflation"
               value={inflation}
               onValueChange={setInflation}
-              type="number"
+              shouldBePositive
               unit={<PercentIcon />}
             />
           </VStack>
           {amount !== undefined && inflation !== undefined && (
             <InflationReport savings={amount} inflation={inflation / 100} />
           )}
-        </VStack>
+          <InflationResourcePromotion />
+        </Content>
       </Container>
     </>
   );

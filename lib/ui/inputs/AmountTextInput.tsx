@@ -1,4 +1,4 @@
-import { Ref, forwardRef, ReactNode, useRef } from "react";
+import { Ref, forwardRef, ReactNode, useState, useRef } from "react";
 import styled from "styled-components";
 import { centerContentCSS } from "../utils/centerContentCSS";
 
@@ -8,11 +8,12 @@ type AmountTextInputProps = Omit<TextInputProps, "value" | "onValueChange"> & {
   value: number | undefined;
   onValueChange?: (value: number | undefined) => void;
   unit?: ReactNode;
+  shouldBePositive?: boolean;
+  shouldBeInteger?: boolean;
 };
 
 const UnitContainer = styled.div`
   border-radius: 8px;
-  font-weight: bold;
   position: absolute;
   left: 12px;
   ${centerContentCSS};
@@ -30,28 +31,46 @@ export const AmountTextInput = forwardRef(function AmountInputInner(
     inputOverlay,
     unit,
     value,
+    shouldBePositive,
+    shouldBeInteger,
     ...props
   }: AmountTextInputProps,
   ref: Ref<HTMLInputElement> | null
 ) {
   const valueAsString = value?.toString() ?? "";
-
-  const inputValue = useRef<string>(valueAsString);
+  const [inputValue, setInputValue] = useState<string>(valueAsString);
 
   return (
     <Input
       {...props}
-      value={valueAsString === inputValue.current ? inputValue.current : value}
+      value={
+        Number(valueAsString) === Number(inputValue)
+          ? inputValue
+          : valueAsString
+      }
       ref={ref}
       inputOverlay={unit ? <UnitContainer>{unit}</UnitContainer> : undefined}
       onValueChange={(value) => {
-        const valueAsNumber = Number(value);
-        if (Number.isNaN(valueAsNumber)) {
+        if (shouldBePositive) {
+          value = value.replace(/-/g, "");
+        }
+
+        if (value === "") {
+          setInputValue("");
+          onValueChange?.(undefined);
           return;
         }
 
-        inputValue.current = value;
-        onValueChange?.(value === "" ? undefined : valueAsNumber);
+        const parse = shouldBeInteger ? parseInt : parseFloat;
+        const valueAsNumber = parse(value);
+        if (isNaN(valueAsNumber)) {
+          return;
+        }
+
+        setInputValue(
+          valueAsNumber.toString() !== value ? value : valueAsNumber.toString()
+        );
+        onValueChange?.(valueAsNumber);
       }}
     />
   );

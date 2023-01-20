@@ -1,18 +1,19 @@
 import { ChangeEvent, InputHTMLAttributes, Ref, forwardRef } from "react";
-import styled, { css } from "styled-components";
-import { defaultTransitionCSS } from "lib/ui/animations/transitions";
-import { defaultInputShapeCSS } from "./config";
+import styled from "styled-components";
 
 import {
   Props as InputWrapperProps,
   InputWrapperWithErrorMessage,
 } from "./InputWrapper";
+import { Spinner } from "../Spinner";
+import { commonInputCSS } from "./commonInputCSS";
 
 export type SharedTextInputProps = Pick<
   InputWrapperProps,
   "label" | "error"
 > & {
   onValueChange?: (value: string) => void;
+  isLoading?: boolean;
 };
 
 export type TextInputProps = InputHTMLAttributes<HTMLInputElement> &
@@ -56,49 +57,12 @@ const InputWr = styled.div`
   align-items: center;
 `;
 
-export const commonInputCSS = css<{
-  isValid: boolean;
-}>`
-  ${defaultInputShapeCSS};
-  max-width: 100%;
-
-  background: ${({ theme }) => theme.colors.backgroundGlass.toCssValue()};
-  color: ${({ theme }) => theme.colors.text.toCssValue()};
-  font-weight: 500;
-  font-size: 18px;
-  width: 100%;
-
-  ${defaultTransitionCSS};
-
-  &::placeholder {
-    color: ${({ theme }) => theme.colors.textSupporting3.toCssValue()};
-  }
-
-  outline: 1px solid transparent;
-  ${({ isValid, theme }) => {
-    const errorColor = theme.colors.alert.toCssValue();
-    const regularColor = isValid
-      ? theme.colors.backgroundGlass.toCssValue()
-      : errorColor;
-    const activeColor = isValid
-      ? theme.colors.backgroundGlass2.toCssValue()
-      : errorColor;
-
-    return css`
-      border: 1px solid ${regularColor};
-
-      :hover {
-        outline-color: ${regularColor};
-      }
-
-      :focus,
-      :active {
-        border-color: ${activeColor};
-      }
-    `;
-  }}
-`;
-
 export const TextInputContainer = styled.input`
   ${commonInputCSS};
 `;
+
+export const TextInputLoader = () => (
+  <TextInputContainer as="div" isValid>
+    <Spinner />
+  </TextInputContainer>
+);
