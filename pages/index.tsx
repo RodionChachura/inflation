@@ -35,8 +35,12 @@ export default function Home() {
       </Head>
       <Container>
         <Content>
-          <Text as="h1">
-            How much money am I losing to{" "}
+          <Text
+            style={{ textTransform: "uppercase" }}
+            weight="semibold"
+            as="h1"
+          >
+            How much do I lose to{" "}
             <Text as="span" color="alert">
               inflation?
             </Text>
@@ -59,7 +63,7 @@ export default function Home() {
             />
           </VStack>
           {amount !== undefined && inflation !== undefined && (
-            <InflationReport savings={amount} inflation={inflation / 100} />
+            <InflationReport savings={amount} inflation={inflation} />
           )}
           <InflationResourcePromotion />
         </Content>
